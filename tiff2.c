@@ -7,7 +7,7 @@ unsigned int current_address_fp=0;
 unsigned short int endiation;
 unsigned int offset;
 
-unsigned IFD_entry_tracker;
+unsigned int IFD_entry_tracker;
 
 int data_read_modify_function(unsigned int bytes_to_proceed,FILE* fp);
 void open_TIFF_File();
@@ -37,6 +37,7 @@ struct image_specifications image_specs;
 int main()
 {
     open_TIFF_File();
+    return 0;
 }
 
 
@@ -72,11 +73,11 @@ void open_TIFF_File()
     offset=data_read_modify_function(4,fp);  					    // We read the offset and shift 4 bytes in in memory of the image file.Now the image data begins(pixel data) 	  											       which we store in an array with help of pointers
 
     printf("Offset Reading Done!\n");
-    image.R=(unsigned char*)malloc((offset-current_address_fp)*sizeof(char)/3);
-    image.G=(unsigned char*)malloc((offset-current_address_fp)*sizeof(char)/3);
-    image.B=(unsigned char*)malloc((offset-current_address_fp)*sizeof(char)/3);  //our intention is to read all data after the header i.e byte 4 to the offset of the first image tag
+    image.R=(unsigned char*)malloc((offset-8)*sizeof(char)/3);
+    image.G=(unsigned char*)malloc((offset-8)*sizeof(char)/3);
+    image.B=(unsigned char*)malloc((offset-8)*sizeof(char)/3);  //our intention is to read all data after the header i.e byte 4 to the offset of the first image tag
                                                                                  //We dont know the size of data so we are dynamically allocating memory for the image data array
-    for(unsigned int i=0;i<offset-current_address_fp;i++)
+    for(unsigned int i=0;i<offset-8;i++)
     {
         if(i%3==2)
         {
@@ -97,11 +98,14 @@ void open_TIFF_File()
     										 //Now our file poiner has reached the end of image data and we start with the IFD detection
     IFD_structure(fp);								//IFD_structure would get us the number of IFD entries of the TIFF image (IFD_entry_tracker is hence made global)
     													
-    while(IFD_entry_tracker)							//Now we go through each tags and extract needed info like width,height...
+    while(IFD_entry_tracker>0)							//Now we go through each tags and extract needed info like width,height...
     {
     	IFD_tag_cases(fp);
+    	
     	IFD_entry_tracker--;
+ 
     }
+
     
 
 }
