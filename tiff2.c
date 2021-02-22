@@ -3,16 +3,6 @@
 #include<math.h>
 #include"opentiff.h"
 
-/*int main()
-{
-    char source[100];-
-    printf("ENTER SOURCE FILE :");
-    scanf("%s",source);
-    open_TIFF_File(source);
-    return 0;
-}*/
-
-
 void open_TIFF_File(char *source)
 {
     struct image_array image;
@@ -48,10 +38,7 @@ void open_TIFF_File(char *source)
 
     grayscale = convertrgb(image,offset);
 
-    /*for(unsigned int i=0; i<(offset-8)/3; i++)
-    {
-       printf("%x ",*(grayscale + i));
-    }*/
+  
     
     printf("\nProceeding to read IFDs and Tags\n");
     										 //Now our file poiner has reached the end of image data and we start with the IFD detection
@@ -64,6 +51,8 @@ void open_TIFF_File(char *source)
     	IFD_entry_tracker--;
  
     }
+
+    offset=data_read_modify_function(4,fp);
     
 
 }
@@ -93,7 +82,7 @@ void IFD_structure(FILE* fp)
 {
 	short number_of_entries = data_read_modify_function(2,fp);		/*An IFD consists of two bytes indicating the number of entries followed by the entries themselves. The IFD is terminated 											with 4 byte offset to the next IFD or 0 if there are none. A TIFF file must contain at least one IFD!*/
 	IFD_entry_tracker = number_of_entries ;
-	offset = data_read_modify_function(4,fp);
+	
 }
 
 void IFD_tag_cases(FILE* fp)
@@ -117,6 +106,10 @@ void IFD_tag_cases(FILE* fp)
 				printf("Image Height detected = %d\n",image_specs.height);
 				data_read_modify_function(2,fp);
 				break;
+			default:
+                		data_read_modify_function(8,fp);
+                		break;
+		
 		}
 				
 		
