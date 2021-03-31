@@ -141,6 +141,7 @@ struct image_array copyrgb(struct image_array image, FILE *fp, unsigned int offs
     return image; 
 }
 
+//This functions converts the RGB pixel data into grayscale data.
 unsigned char* convertrgb(struct image_array image, unsigned int offset)
 {
     
